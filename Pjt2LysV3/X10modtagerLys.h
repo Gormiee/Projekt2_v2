@@ -2,7 +2,6 @@
 
 #include "X10modtager.h"
 
-
 class X10modtagerLys : public X10modtager
 {
 	public:

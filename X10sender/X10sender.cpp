@@ -8,34 +8,23 @@ X10sender::X10sender()
 {
 	UC_ = 101001;
 	DDRB = 0xFF;
-	TCCR0B = TCCR0B & 1111.1001; //prescaler på 1 ingen ingen
-	TCCR0A = TCCR0A | 1100.0000;
+	DDRD = 0;
+	TCCR0B = TCCR0B & 11111001; //prescaler på 1 ingen ingen
+	TCCR0A = TCCR0A | 11000000;
 	OCR0A = 0;
 }
 
-void X10sender::sendUseCase(int UC)
+void X10sender::sendbit(int bit)    //sender bit på OCR0A. Dette er ben B7/nr:26.
 {
-
-	OCR0A  = 66;
-	_delay_ms(3);
-	OCR0A  = 0;
-	_delay_ms(1);
-
-	for (int i = 0; i < 6; i++)
+	if (!bit)
 	{
-		if (!(UC && (1 << 6 - i)))
-		{
-			_delay_ms(1);
-		}
-		else
-		{
-			OCR0A = 66;
-			_delay_ms(1);
-			OCR0A = 0; //eller 255 eller sluk for timer. men ved ikke hvordan
-		}
+		return;
 	}
-
-	_delay_ms(6);
-
+	else {
+		OCR0A  = 66;
+		_delay_ms(1);
+		OCR0A  = 0;
+		return;
+	}
 }
 

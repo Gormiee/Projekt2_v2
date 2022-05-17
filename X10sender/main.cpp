@@ -21,7 +21,7 @@ X10sender X10s;
 
 int main(void)
 {
-	
+	sei();	
 	// if (new code != old code)
 	// tænd EIMSK |= 0b00000100;
 	
@@ -29,15 +29,36 @@ int main(void)
     {
 		if (oldUseCase != newUseCase)
 		{
-			EIMSK |= 0b00000100;
+			EIMSK |= 0b00000010;   //sætter INT1 til any edge interrupt.
 		}
     }
 }
 
 ISR (INT1_vect)
 {
-	X10s.sendUseCase(newUseCase);
-	X10s.sendUseCase(newUseCase);
+	static int antal_bits = 0;
+	static int casesSend = 0;
+	if (casesSend < 2)
+	{
+		X10s.sendbit(antal_bits);
+		antal_bits++;
+	}
+	if(!antal_bits == 16)
+	{
+		return;
+	}
+	else
+	{
+		casesSend++;
+		antal_bits = 0;
+		return;
+	}
+		
+	if (casesSend = 2)
+	{
+		EIMSK |= 0b00000000;
+	}
+	
 }
 
 void initExtInts()

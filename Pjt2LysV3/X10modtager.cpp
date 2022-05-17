@@ -1,90 +1,66 @@
 #include "X10modtager.h"
-#include <deque>
-#include <util/delay.h>
-#include <math.h>
+#include <avr/io.h>
 
 
 X10modtager::X10modtager()
 {
-	useCase_ = 101001;
-}
-
-
-
-bool X10modtager::listenStart()
-{
-	int modtaget[4] = { 0 };
-
-	for (int i = 0; i < 4; i++)
-	{
-		modtaget[i] = PIND2;
-		_delay_ms(1);
-	}
-
-	if (modtaget[0] == 1 && modtaget[1] == 1 && modtaget[2] == 1 && modtaget[3] == 0)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-int X10modtager::listenUseCase()
-{
-	int UseCase1[12];
-	int UseCase2[12];
-	int vUseCase;  //validaret useCase.
-	
-	for (int i = 0; i < 12; i++)
-	{
-		UseCase1[i] = PIND2;
-		_delay_ms(1);
-	}
-	
-	if (!listenStart())	
-	{
-		return useCase_;
-	}
-	
-	for (int i = 0; i < 12; i++)
-	{
-		UseCase2[i] = PIND2
-	}
-	
-	for (int i = 0; i < 12; i++)
-	{
-		if(!UseCase1[i] == UseCase2[i])
-		{
-			return useCase_;
-		}
-		else
-		{
-			for (int i = 0; i < 6; i++)
-			{
-				vUseCase += (UseCase1[i]*pow(2,6-i));
-			}
-			return vUseCase;
-		}
-	}
-	
-}
-
-void X10modtager::initX10Modtager()
-{
+	currentUseCase_ = stopSim_;
 	DDRD = 0;
 }
 
 
-int X10modtager::getUseCase()
+int X10modtager::listenUseCase(int antal_bits, int & modtaget)
 {
-	return useCase_;
+	if (antal_bits < 4)
+	{
+		if(!PIND2 == (startBits_ && (1<<(3 - antal_bits))))
+		{
+			antal_bits = 0;
+			return antal_bits;
+		} else
+		{
+			antal_bits++;
+			return antal_bits;
+		}
+	} else if (antal_bits < 10)
+	{
+		modtaget += (PIND2 << (10-antal_bits));
+		antal_bits++;
+		return antal_bits;
+	}
+	else if (antal_bits < 16 )
+	{
+		if(!PIND2 == 0)
+		{
+			modtaget = 0;
+			antal_bits = 0;
+			return antal_bits;
+		}
+		else
+		{
+			antal_bits++;
+			return antal_bits;
+		}
+	}
 }
 
-int X10modtager::setUseCase(int UC)
+
+int X10modtager::getCurrentUseCase()
 {
-	useCase_= UC;
+	return currentUseCase_;
+}
+
+void X10modtager::setCurrentUseCase(int UC)
+{
+	currentUseCase_ = UC;
 }
 	
+int X10modtager::getReceivedUseCase()
+{
+	return reveivedUseCase_;
+}
 
+void X10modtager::setReceivedUseCase(int UC)
+{
+	reveivedUseCase_ = UC;
+}

@@ -6,11 +6,11 @@
  */ 
 
 #include <avr/io.h>
-#define	F_CPU = 8000000
 #include <avr/interrupt.h>
 #include <util/delay.h>
-#include "led.h"
+#include "LEDX10.h"
 #include "X10modtagerLys.h"
+#define	F_CPU = 8000000
 
 //Prototyper
 void initExtInts();
@@ -25,7 +25,8 @@ X10modtagerLys X10stue(15);
 
 int main(void)
 {
-	initLEDport()
+	initExtInts();
+	initLEDport();
 	initTimer0();
 	sei();
 	setPoint = X10stue.getSetPoint(); //ændres til getSetpoint måkse
@@ -33,13 +34,13 @@ int main(void)
     /* Replace with your application code */
     while (1)
     {
-		while(newUseCase_ == oldUseCase_)
-		{			
-		}
-		newUseCase_ = oldUseCase_;
-		}
-		if (X10stue.getUseCase() == 101010 || X10stue.getUseCase()=010101)
+		while(X10stue.getCurrentUseCase() == X10stue.getReceivedUseCase())
 		{
+		}
+		X10stue.setCurrentUseCase(X10stue.getReceivedUseCase());
+		if (X10stue.getCurrentUseCase() == X10stue.lysOgLys_ || X10stue.getCurrentUseCase() == X10stue.kunLys_)
+		{
+			antal_overflows = 0;
 			TIMSK0 |= 0b00000001;
 		}
 		else
@@ -56,11 +57,11 @@ ISR(TIMER0_OVF_vect)
   // LED6 toggles, når der har vaeret 62500 interrupts
   // = hvert sekund, da 8000000/1/256 = 1
   antal_overflows++;
-  if (antal_overflows == 31250*SETPOINT)  //*setpoint og toggle ved setpoint*30 eller indtast to setpoints. Husk vi bruger en anden clock 8/4 MHz
+  if (antal_overflows == 31250*setPoint)  //*setpoint og toggle ved setpoint*30 eller indtast to setpoints. Husk vi bruger en anden clock 8/4 MHz
   {
     turnOnLED(1);
   }
-  else if (antal_overflows == 31250*SETPOINT*30)
+  else if (antal_overflows == 31250*setPoint*30)
   {
 	turnOffLED(1);
   }
@@ -70,14 +71,52 @@ ISR(TIMER0_OVF_vect)
   }
 }
 
-// Interrupt service ZERO-Cross. INT1
+
 ISR (INT1_vect)
 {
-	if (PIND2 == 1)
+	static int firstUseCase = 0;
+	static int secondUseCase = 0;
+	static int modtagetFirst = 0;
+	if (!modtagetFirst)
 	{
-		if (X10stue.listenStart())
+		antal_bits = X10stue.listenUseCase(antal_bits, &firstUseCase);
+		if (!antal_bits == 15)
 		{
-			X10stue.setUseCase(X10stue.listenUseCase());
+			return;
+		}
+		else
+		{
+			modtagetFirst = 1;
+			antal_bits = 0;
+			return;
+		}
+	}
+	else
+	{
+		antal_bits = X10stue.listenUseCase(antal_bits, &secondUseCase);
+		
+		if (!antal_bits)
+		{
+			static int firstUseCase = 0;
+			static int secondUseCase = 0;
+			static int modtagetFirst = 0;
+			return;
+		} else if (antal_bits < 32)
+		{
+			return;
+		}
+		else if (secondUseCase == firstUseCase)
+		{
+			X10stue.setReceivedUseCase(firstUseCase);
+			static int firstUseCase = 0;
+			static int secondUseCase = 0;
+			static int modtagetFirst = 0;
+		}
+		else
+		{
+			static int firstUseCase = 0;
+			static int secondUseCase = 0;
+			static int modtagetFirst = 0;
 		}
 	}
 }
