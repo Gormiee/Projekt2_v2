@@ -9,6 +9,8 @@ Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "X10sender", "X10sender\X10s
 EndProject
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "UART", "UART\UART.cppproj", "{7EA5CB00-9B53-4CC4-9CD9-B2C29D50FD92}"
 EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Gormie_deque", "Gormie_deque\Gormie_deque.cppproj", "{CB66BC72-A9C7-45DB-93A4-35EB892ADC8C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AVR = Debug|AVR
@@ -25,6 +27,10 @@ Global
 		{7EA5CB00-9B53-4CC4-9CD9-B2C29D50FD92}.Debug|AVR.Build.0 = Debug|AVR
 		{7EA5CB00-9B53-4CC4-9CD9-B2C29D50FD92}.Release|AVR.ActiveCfg = Release|AVR
 		{7EA5CB00-9B53-4CC4-9CD9-B2C29D50FD92}.Release|AVR.Build.0 = Release|AVR
+		{CB66BC72-A9C7-45DB-93A4-35EB892ADC8C}.Debug|AVR.ActiveCfg = Debug|AVR
+		{CB66BC72-A9C7-45DB-93A4-35EB892ADC8C}.Debug|AVR.Build.0 = Debug|AVR
+		{CB66BC72-A9C7-45DB-93A4-35EB892ADC8C}.Release|AVR.ActiveCfg = Release|AVR
+		{CB66BC72-A9C7-45DB-93A4-35EB892ADC8C}.Release|AVR.Build.0 = Release|AVR
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

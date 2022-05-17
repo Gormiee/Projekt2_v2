@@ -38,3 +38,4 @@ void X10sender::sendUseCase(int UC)
 	_delay_ms(6);
 
 }
+

@@ -18,27 +18,35 @@ void initTimer0();
 
 // Global variabel, der tæller antal Timer0 overflows (bemærk: SKAL erklæres volatile)
 volatile unsigned int antal_overflows = 0;
+volatile unsigned int antal_bits = 0;
 volatile unsigned int setPoint = 10;
+
+X10modtagerLys X10stue(15);
 
 int main(void)
 {
 	initLEDport()
 	initTimer0();
-	
-	X10modtagerLys X10stue();
-	setPoint = X10stue.getsetPoint(); //ændres til getSetpoint måkse
+	sei();
+	setPoint = X10stue.getSetPoint(); //ændres til getSetpoint måkse
 	
     /* Replace with your application code */
-    while (1) 
-    {			
-		while (!PIND(1) == 1)
-		{
+    while (1)
+    {
+		while(newUseCase_ == oldUseCase_)
+		{			
 		}
-		
-		if (X10stue.listenStart())
+		newUseCase_ = oldUseCase_;
+		}
+		if (X10stue.getUseCase() == 101010 || X10stue.getUseCase()=010101)
 		{
-			X10stue.setUseCase(X10stue.listenUseCase());
-		}		
+			TIMSK0 |= 0b00000001;
+		}
+		else
+		{
+			TIMSK0 |= 0b00000000;
+			antal_overflows = 0;
+		}
     }
 }
 
@@ -62,12 +70,24 @@ ISR(TIMER0_OVF_vect)
   }
 }
 
+// Interrupt service ZERO-Cross. INT1
+ISR (INT1_vect)
+{
+	if (PIND2 == 1)
+	{
+		if (X10stue.listenStart())
+		{
+			X10stue.setUseCase(X10stue.listenUseCase());
+		}
+	}
+}
+
 void initExtInts()
 {
-	// INT2:Falling edge, INT3:Rising edge
-	EICRA = 0b11100000;
-	// Enable extern interrupts INT2 og INT3
-	EIMSK |= 0b00001100;
+	// ZERO-CROSS detekter, interrupt ved edge-skift. Ben44, PD1 INT0.
+	EICRA = 0b00000100;
+	// Enable extern interrupts INT1.
+	EIMSK |= 0b00000010;
 }
 
 void initTimer0()
@@ -76,5 +96,5 @@ void initTimer0()
 	TCCR0A = 0b00000000;
 	TCCR0B = 0b00000001;
 	// Enable Timer0 overflow interrupt
-	TIMSK0 |= 0b00000001;
+	TIMSK0 |= 0b00000000;
 }

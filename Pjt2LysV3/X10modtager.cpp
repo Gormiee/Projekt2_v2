@@ -1,6 +1,7 @@
 #include "X10modtager.h"
 #include <deque>
 #include <util/delay.h>
+#include <math.h>
 
 
 X10modtager::X10modtager()
@@ -16,7 +17,7 @@ bool X10modtager::listenStart()
 
 	for (int i = 0; i < 4; i++)
 	{
-		modtaget[i] = PIND(1);
+		modtaget[i] = PIND2;
 		_delay_ms(1);
 	}
 
@@ -34,11 +35,11 @@ int X10modtager::listenUseCase()
 {
 	int UseCase1[12];
 	int UseCase2[12];
-	int vUseCase;
+	int vUseCase;  //validaret useCase.
 	
-	for (int i = 4; i < 12; i++)
+	for (int i = 0; i < 12; i++)
 	{
-		UseCase1[i] = PIND(1);
+		UseCase1[i] = PIND2;
 		_delay_ms(1);
 	}
 	
@@ -49,7 +50,7 @@ int X10modtager::listenUseCase()
 	
 	for (int i = 0; i < 12; i++)
 	{
-		UseCase2[i] = PINA
+		UseCase2[i] = PIND2
 	}
 	
 	for (int i = 0; i < 12; i++)
@@ -62,7 +63,7 @@ int X10modtager::listenUseCase()
 		{
 			for (int i = 0; i < 6; i++)
 			{
-				vUseCase += (0b000000 ^ (1 << (6-i)))
+				vUseCase += (UseCase1[i]*pow(2,6-i));
 			}
 			return vUseCase;
 		}
