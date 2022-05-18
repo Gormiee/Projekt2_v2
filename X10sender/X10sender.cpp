@@ -6,15 +6,15 @@
 
 X10sender::X10sender()
 {
-	UC_ = 101001;
+	UC_ = 0b101001;
 	DDRB = 0xFF;
 	DDRD = 0;
-	TCCR0B = TCCR0B & 11111001; //prescaler på 1 ingen ingen
-	TCCR0A = TCCR0A | 11000000;
+	TCCR0B = TCCR0B & 0b11111001; //prescaler på 1 ingen ingen
+	TCCR0A = TCCR0A | 0b11000000;
 	OCR0A = 0;
 }
 
-void X10sender::sendbit(int bit)    //sender bit på OCR0A. Dette er ben B7/nr:26.
+void X10sender::sendBit(int bit)    //sender bit på OCR0A. Dette er ben B7/nr:26.
 {
 	if (!bit)
 	{

@@ -8,12 +8,15 @@
 #include <avr/io.h>
 #include "X10sender.h"
 #define F_CPU 16000000
+#include <util/delay.h>
+#include <avr/interrupt.h>
 
-#define STARTBIT 1110
-#define STOPBIT 000000
 
-int oldUseCase = 010101;
-int newUseCase = 010101;
+#define STARTBIT 0b1110
+#define STOPBIT 0b000000
+
+int oldUseCase = 0b010101;
+int newUseCase = 0b010101;
 
 void initExtInts();
 
@@ -40,10 +43,10 @@ ISR (INT1_vect)
 	static int casesSend = 0;
 	if (casesSend < 2)
 	{
-		X10s.sendbit(antal_bits);
+		X10s.sendBit(antal_bits);
 		antal_bits++;
 	}
-	if(!antal_bits == 16)
+	if(!(antal_bits == 16))
 	{
 		return;
 	}
@@ -54,7 +57,7 @@ ISR (INT1_vect)
 		return;
 	}
 		
-	if (casesSend = 2)
+	if (casesSend == 2)
 	{
 		EIMSK |= 0b00000000;
 	}
